@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Keselamatan Jalan - Kelas 2 SD</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Fredoka for fun typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brandYellow: '#FFD166',
+                        brandGreen: '#06D6A0',
+                        brandBlue: '#118AB2',
+                        brandRed: '#EF476F',
+                        brandDark: '#073B4C'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Fredoka', cursive, 'Inter', sans-serif;
+            background-color: #F4F9FF;
+            user-select: none;
+        }
+        .bounce-gentle {
+            animation: bounceGentle 2s infinite;
+        }
+        @keyframes bounceGentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .pulse-subtle {
+            animation: pulseSubtle 1.5s infinite;
+        }
+        @keyframes pulseSubtle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+        }
+        .btn-game {
+            transition: all 0.15s ease-out;
+            box-shadow: 0px 6px 0px rgba(0,0,0,0.2);
+        }
+        .btn-game:active {
+            transform: translateY(4px);
+            box-shadow: 0px 2px 0px rgba(0,0,0,0.2);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #E2E8F0;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #118AB2;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-brandDark flex flex-col justify-between">
+
+    <!-- Navbar Header -->
+    <header class="bg-brandBlue text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="goToScreen('screen-welcome')">
+                <div class="w-10 h-10 bg-brandYellow rounded-full flex items-center justify-center text-brandDark text-xl font-bold border-2 border-white">
+                    <i class="fa-solid fa-traffic-light"></i>
+                </div>
+                <h1 class="text-xl md:text-2xl font-bold tracking-wide">Aman di Jalan</h1>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <!-- User badge if name set -->
+                <div id="header-user" class="hidden flex items-center space-x-2 bg-white/20 px-3 py-1 rounded-full text-sm">
+                    <span id="user-avatar-disp">👦</span>
+                    <span id="user-name-disp" class="font-semibold truncate max-w-[100px]">Siswa</span>
+                </div>
+                <!-- Audio Toggle Button -->
+                <button id="btn-audio-toggle" onclick="toggleAudioSetting()" class="bg-brandYellow hover:bg-yellow-300 text-brandDark px-3 py-1.5 rounded-full text-sm font-bold flex items-center gap-1.5 shadow transition">
+                    <i id="audio-icon" class="fa-solid fa-volume-high"></i>
+                    <span id="audio-status-text" class="hidden sm:inline">Suara ON</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto w-full p-4 flex-grow flex items-center justify-center">
+
+        <!-- SCREEN 1: WELCOME & INPUT NAMA -->
+        <section id="screen-welcome" class="w-full bg-white rounded-3xl p-6 md:p-10 shadow-xl border-4 border-brandBlue text-center space-y-6">
+            <div class="inline-block bg-yellow-100 text-yellow-800 text-xs md:text-sm font-bold px-4 py-1.5 rounded-full border border-yellow-300 uppercase tracking-wider">
+                Pendidikan Keselamatan Lalu Lintas Kelas 2 SD
+            </div>
+            
+            <div class="flex justify-center">
+                <div class="relative">
+                    <div class="w-28 h-28 md:w-36 md:h-36 bg-brandYellow rounded-full flex items-center justify-center text-5xl md:text-6xl shadow-inner border-4 border-white bounce-gentle">
+                        🚦
+                    </div>
+                    <span class="absolute -bottom-2 -right-2 bg-brandGreen text-white p-2 rounded-full text-xl shadow">👮</span>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h2 class="text-3xl md:text-4xl font-extrabold text-brandDark">Halo Teman Hebat!</h2>
+                <p class="text-gray-600 text-base md:text-lg max-w-md mx-auto">
+                    Yuk belajar cara berjalan dan menyeberang jalan yang aman bersama Kapten Rambu!
+                </p>
+            </div>
+
+            <!-- Form Nama & Avatar -->
+            <div class="max-w-md mx-auto space-y-4 bg-sky-50 p-5 rounded-2xl border-2 border-sky-100">
+                <div>
+                    <label class="block text-left text-sm font-bold text-gray-700 mb-1">Pilih Avatarmu:</label>
+                    <div class="flex justify-center gap-4 text-3xl">
+                        <button type="button" onclick="selectAvatar('👦')" class="avatar-btn p-2 rounded-2xl border-2 border-brandBlue bg-white hover:scale-110 transition shadow">👦</button>
+                        <button type="button" onclick="selectAvatar('👧')" class="avatar-btn p-2 rounded-2xl border-2 border-transparent bg-white hover:scale-110 transition shadow">👧</button>
+                        <button type="button" onclick="selectAvatar('🧑')" class="avatar-btn p-2 rounded-2xl border-2 border-transparent bg-white hover:scale-110 transition shadow">🧑</button>
+                        <button type="button" onclick="selectAvatar('🧒')" class="avatar-btn p-2 rounded-2xl border-2 border-transparent bg-white hover:scale-110 transition shadow">🧒</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="student-name" class="block text-left text-sm font-bold text-gray-700 mb-1">Siapa Nama Lengkapmu?</label>
+                    <input type="text" id="student-name" placeholder="Tulis namamu di sini..." class="w-full px-4 py-3 rounded-xl border-2 border-brandBlue focus:outline-none focus:ring-2 focus:ring-brandYellow text-center font-bold text-lg">
+                </div>
+            </div>
+
+            <button onclick="startApp()" class="btn-game bg-brandGreen hover:bg-emerald-500 text-white font-extrabold text-xl px-8 py-4 rounded-2xl w-full max-w-md transition flex items-center justify-center gap-3 mx-auto">
+                <span>Mulai Petualangan</span>
+                <i class="fa-solid fa-circle-play text-2xl"></i>
+            </button>
+        </section>
+
+        <!-- SCREEN 2: MAIN MENU -->
+        <section id="screen-menu" class="hidden w-full space-y-6">
+            <div class="bg-white rounded-3xl p-6 shadow-xl border-4 border-brandBlue text-center relative overflow-hidden">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center space-x-4 text-left">
+                        <div id="menu-avatar-display" class="text-5xl bg-amber-100 p-3 rounded-2xl border-2 border-amber-300">👦</div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-bold">Detektif Keselamatan Jalan</p>
+                            <h2 id="menu-greeting" class="text-2xl font-extrabold text-brandDark">Halo, Budi!</h2>
+                            <p class="text-xs text-brandBlue font-semibold">Pilih kegiatan belajarmu hari ini:</p>
+                        </div>
+                    </div>
+                    <button onclick="speakText('Halo! Pilih materi untuk belajar, atau langsung mainkan game simulasi dan kuis!')" class="bg-yellow-100 hover:bg-yellow-200 text-amber-800 p-3 rounded-2xl flex items-center gap-2 font-bold text-sm">
+                        <i class="fa-solid fa-volume-high text-lg"></i>
+                        <span>Dengarkan Petunjuk</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Menu Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Card Materi -->
+                <div onclick="goToMateri()" class="bg-white hover:bg-emerald-50 rounded-3xl p-6 shadow-lg border-4 border-brandGreen cursor-pointer transition transform hover:-translate-y-1 group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-14 h-14 bg-brandGreen text-white rounded-2xl flex items-center justify-center text-3xl shadow">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">Langkah 1</span>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-brandDark group-hover:text-brandGreen">1. Materi Belajar</h3>
+                    <p class="text-gray-600 text-sm mt-1">Pelajari warna lampu lalu lintas, zebra cross, dan cara menyeberang 4T!</p>
+                </div>
+
+                <!-- Card Game Simulasi -->
+                <div onclick="goToGame()" class="bg-white hover:bg-amber-50 rounded-3xl p-6 shadow-lg border-4 border-brandYellow cursor-pointer transition transform hover:-translate-y-1 group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-14 h-14 bg-brandYellow text-brandDark rounded-2xl flex items-center justify-center text-3xl shadow">
+                            <i class="fa-solid fa-gamepad"></i>
+                        </div>
+                        <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">Langkah 2</span>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-brandDark group-hover:text-amber-600">2. Game Simulasi 4T</h3>
+                    <p class="text-gray-600 text-sm mt-1">Latihan praktik menyeberang jalan secara langsung sebelum kuis!</p>
+                </div>
+
+                <!-- Card Kuis -->
+                <div onclick="goToQuiz()" class="bg-white hover:bg-rose-50 rounded-3xl p-6 shadow-lg border-4 border-brandRed cursor-pointer transition transform hover:-translate-y-1 group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-14 h-14 bg-brandRed text-white rounded-2xl flex items-center justify-center text-3xl shadow">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <span class="bg-rose-100 text-rose-800 text-xs font-bold px-3 py-1 rounded-full">Langkah 3</span>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-brandDark group-hover:text-brandRed">3. Latihan Soal Kuis</h3>
+                    <p class="text-gray-600 text-sm mt-1">Uji pengetahuanmu dengan 5 pertanyaan seru berhadiah skor!</p>
+                </div>
+
+                <!-- Card Sertifikat -->
+                <div onclick="goToCertificate()" class="bg-white hover:bg-sky-50 rounded-3xl p-6 shadow-lg border-4 border-brandBlue cursor-pointer transition transform hover:-translate-y-1 group">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-14 h-14 bg-brandBlue text-white rounded-2xl flex items-center justify-center text-3xl shadow">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <span class="bg-sky-100 text-sky-800 text-xs font-bold px-3 py-1 rounded-full">Hasil</span>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-brandDark group-hover:text-brandBlue">4. Sertifikat Detektif</h3>
+                    <p class="text-gray-600 text-sm mt-1">Lihat dan cetak sertifikat kelulusan keselamatan jalan milikmu!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: MATERI BELAJAR INTERAKTIF -->
+        <section id="screen-materi" class="hidden w-full bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-brandGreen space-y-6">
+            <!-- Header Materi -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 gap-3">
+                <div class="flex items-center space-x-3">
+                    <button onclick="goToScreen('screen-menu')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2.5 rounded-2xl transition">
+                        <i class="fa-solid fa-arrow-left text-lg"></i>
+                    </button>
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-brandDark">Materi: Berhati-hati di Jalan</h2>
+                        <p class="text-xs text-gray-500 font-semibold">Modul Pembelajaran SD Kelas 2</p>
+                    </div>
+                </div>
+                <button id="btn-read-materi" onclick="speakCurrentMateriTab()" class="bg-brandYellow hover:bg-yellow-400 text-brandDark px-4 py-2 rounded-2xl font-bold text-sm flex items-center gap-2 shadow">
+                    <i class="fa-solid fa-volume-high"></i>
+                    <span>Bacakan Materi</span>
+                </button>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="flex border-b overflow-x-auto gap-2 pb-2 scrollbar-none">
+                <button onclick="switchMateriTab(1)" id="tab-mat-1" class="px-4 py-2 font-bold rounded-2xl whitespace-nowrap bg-brandGreen text-white">1. Lampu Lalu Lintas</button>
+                <button onclick="switchMateriTab(2)" id="tab-mat-2" class="px-4 py-2 font-bold rounded-2xl whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200">2. Cara Menyeberang 4T</button>
+                <button onclick="switchMateriTab(3)" id="tab-mat-3" class="px-4 py-2 font-bold rounded-2xl whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200">3. Tempat Aman & Rambu</button>
+                <button onclick="switchMateriTab(4)" id="tab-mat-4" class="px-4 py-2 font-bold rounded-2xl whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200">4. Aturan Sepeda & Mobil</button>
+            </div>
+
+            <!-- Tab Content 1: Lampu Lalu Lintas -->
+            <div id="materi-content-1" class="materi-panel space-y-4">
+                <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200 text-amber-900 flex items-center gap-3">
+                    <span class="text-3xl">💡</span>
+                    <p class="text-sm font-semibold">Klik lampu lalu lintas di bawah ini untuk mendengarkan artinya!</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Lampu Merah -->
+                    <div onclick="playLampuInfo('merah')" class="bg-red-50 hover:bg-red-100 p-5 rounded-2xl border-2 border-red-300 text-center cursor-pointer transition transform hover:scale-105">
+                        <div class="w-20 h-20 bg-red-500 rounded-full mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-lg border-4 border-red-200 mb-3 pulse-subtle">
+                            🔴
+                        </div>
+                        <h4 class="text-xl font-bold text-red-600">LAMPU MERAH</h4>
+                        <p class="text-xs font-semibold text-gray-600 mt-2">Artinya: <span class="font-bold text-red-700">BERHENTI!</span> Semua kendaraan harus stop.</p>
+                    </div>
+
+                    <!-- Lampu Kuning -->
+                    <div onclick="playLampuInfo('kuning')" class="bg-yellow-50 hover:bg-yellow-100 p-5 rounded-2xl border-2 border-yellow-300 text-center cursor-pointer transition transform hover:scale-105">
+                        <div class="w-20 h-20 bg-yellow-400 rounded-full mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-lg border-4 border-yellow-100 mb-3">
+                            🟡
+                        </div>
+                        <h4 class="text-xl font-bold text-yellow-600">LAMPU KUNING</h4>
+                        <p class="text-xs font-semibold text-gray-600 mt-2">Artinya: <span class="font-bold text-yellow-700">HATI-HATI!</span> Bersiap-siap untuk berhenti.</p>
+                    </div>
+
+                    <!-- Lampu Hijau -->
+                    <div onclick="playLampuInfo('hijau')" class="bg-emerald-50 hover:bg-emerald-100 p-5 rounded-2xl border-2 border-emerald-300 text-center cursor-pointer transition transform hover:scale-105">
+                        <div class="w-20 h-20 bg-emerald-500 rounded-full mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-lg border-4 border-emerald-200 mb-3">
+                            🟢
+                        </div>
+                        <h4 class="text-xl font-bold text-emerald-600">LAMPU HIJAU</h4>
+                        <p class="text-xs font-semibold text-gray-600 mt-2">Artinya: <span class="font-bold text-emerald-700">JALAN!</span> Kendaraan boleh berjalan.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content 2: Menyeberang 4T -->
+            <div id="materi-content-2" class="materi-panel hidden space-y-4">
+                <div class="bg-sky-50 p-4 rounded-2xl border border-sky-200 text-sky-900">
+                    <h3 class="font-extrabold text-lg">Rumus Ajaib Menyeberang Jalan: <span class="text-brandBlue">Aturan 4T</span></h3>
+                    <p class="text-xs font-semibold text-gray-600">Ingatlah 4 langkah ini setiap kali kamu ingin menyeberang jalan!</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    <div class="bg-white p-4 rounded-2xl border-2 border-sky-300 text-center shadow-sm">
+                        <div class="w-12 h-12 bg-sky-500 text-white rounded-xl flex items-center justify-center font-bold text-xl mx-auto mb-2">1</div>
+                        <h4 class="font-extrabold text-brandDark">Tengok KANAN</h4>
+                        <p class="text-xs text-gray-500 mt-1">Lihat ke kanan apakah ada mobil/motor yang datang.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border-2 border-sky-300 text-center shadow-sm">
+                        <div class="w-12 h-12 bg-sky-500 text-white rounded-xl flex items-center justify-center font-bold text-xl mx-auto mb-2">2</div>
+                        <h4 class="font-extrabold text-brandDark">Tengok KIRI</h4>
+                        <p class="text-xs text-gray-500 mt-1">Lihat ke kiri untuk memastikan jalanan aman.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border-2 border-sky-300 text-center shadow-sm">
+                        <div class="w-12 h-12 bg-sky-500 text-white rounded-xl flex items-center justify-center font-bold text-xl mx-auto mb-2">3</div>
+                        <h4 class="font-extrabold text-brandDark">Tengok KANAN LAGI</h4>
+                        <p class="text-xs text-gray-500 mt-1">Pastikan sekali lagi kanan benar-benar sepi.</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl border-2 border-brandGreen text-center shadow-sm">
+                        <div class="w-12 h-12 bg-brandGreen text-white rounded-xl flex items-center justify-center font-bold text-xl mx-auto mb-2">4</div>
+                        <h4 class="font-extrabold text-brandGreen">TINDAKAN (Jalan)</h4>
+                        <p class="text-xs text-gray-500 mt-1">Menyeberanglah dengan tenang, tidak boleh berlari!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content 3: Tempat Aman & Rambu -->
+            <div id="materi-content-3" class="materi-panel hidden space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-300 flex items-start space-x-3">
+                        <div class="text-4xl">🦓</div>
+                        <div>
+                            <h4 class="font-bold text-base text-brandDark">1. Zebra Cross</h4>
+                            <p class="text-xs text-gray-600 mt-1">Garis-garis putih di jalan khusus untuk tempat berjalan kaki menyeberang. Pengendara harus mengalah saat ada orang di zebra cross.</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-300 flex items-start space-x-3">
+                        <div class="text-4xl">🌉</div>
+                        <div>
+                            <h4 class="font-bold text-base text-brandDark">2. JPO (Jembatan Penyeberangan)</h4>
+                            <p class="text-xs text-gray-600 mt-1">Jembatan di atas jalan raya. Ini tempat paling aman untuk menyeberang karena tidak bertemu dengan kendaraan.</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-300 flex items-start space-x-3">
+                        <div class="text-4xl">🚶</div>
+                        <div>
+                            <h4 class="font-bold text-base text-brandDark">3. Trotoar</h4>
+                            <p class="text-xs text-gray-600 mt-1">Jalan khusus untuk pejalan kaki di pinggir jalan raya. Selalu berjalan di trotoar!</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-300 flex items-start space-x-3">
+                        <div class="text-4xl">⛔</div>
+                        <div>
+                            <h4 class="font-bold text-base text-brandDark">4. Rambu Dilarang</h4>
+                            <p class="text-xs text-gray-600 mt-1">Lingkaran merah dengan garis tengah artinya DILARANG (misal: Dilarang Menyeberang / Stop).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content 4: Sepeda & Mobil -->
+            <div id="materi-content-4" class="materi-panel hidden space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-purple-50 p-5 rounded-2xl border-2 border-purple-200 space-y-2">
+                        <div class="text-4xl">🚴</div>
+                        <h4 class="font-extrabold text-purple-900">Aturan Naik Sepeda</h4>
+                        <ul class="text-xs text-gray-700 space-y-1 list-disc list-inside">
+                            <li>Wajib memakai <strong>Helm Sepeda</strong>.</li>
+                            <li>Gunakan pelindung siku dan lutut.</li>
+                            <li>Gunakan jalur kiri jalan.</li>
+                            <li>Jangan lepas stang sepeda saat mengayuh.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-emerald-50 p-5 rounded-2xl border-2 border-emerald-200 space-y-2">
+                        <div class="text-4xl">🚗</div>
+                        <h4 class="font-extrabold text-emerald-900">Aturan Naik Mobil / Motor</h4>
+                        <ul class="text-xs text-gray-700 space-y-1 list-disc list-inside">
+                            <li>Pakai <strong>Sabuk Pengaman</strong> di dalam mobil.</li>
+                            <li>Wajib pakai <strong>Helm SNI</strong> saat naik motor.</li>
+                            <li>Dilarang mengeluarkan anggota tubuh keluar jendela.</li>
+                            <li>Duduk tenang, jangan mengganggu pengemudi.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigasi Bawah Materi -->
+            <div class="flex justify-between items-center pt-4 border-t">
+                <button onclick="goToScreen('screen-menu')" class="text-gray-500 font-bold text-sm hover:underline">
+                    ← Kembali ke Menu
+                </button>
+                <button onclick="goToGame()" class="btn-game bg-brandYellow hover:bg-yellow-400 text-brandDark px-6 py-3 rounded-2xl font-extrabold text-sm flex items-center gap-2">
+                    <span>Lanjut ke Game Simulasi</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 4: GAME SIMULASI MENYEBERANG JALAN -->
+        <section id="screen-game" class="hidden w-full bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-brandYellow space-y-6">
+            <div class="flex justify-between items-center border-b pb-3">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-brandDark">Mini Game: Simulasi Menyeberang 4T</h2>
+                    <p class="text-xs text-gray-500">Bantu karaktermu menyeberang jalan dengan aman!</p>
+                </div>
+                <button onclick="goToScreen('screen-menu')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-xl text-sm font-bold">
+                    Keluar Game
+                </button>
+            </div>
+
+            <!-- Interactive Game Stage Canvas Container -->
+            <div class="bg-slate-800 rounded-2xl p-4 text-white text-center space-y-4 relative overflow-hidden">
+                <!-- Status banner -->
+                <div id="game-message" class="bg-brandBlue text-white p-3 rounded-xl font-bold text-sm md:text-base">
+                    Langkah 1: Klik tombol "Tengok Kanan" untuk memeriksa mobil!
+                </div>
+
+                <!-- Graphic Road Area -->
+                <div class="relative bg-slate-700 h-64 rounded-xl border-4 border-slate-600 flex flex-col justify-between p-3 overflow-hidden">
+                    <!-- Top Sidewalk -->
+                    <div class="bg-stone-300 h-10 rounded-lg flex items-center justify-between px-4 border-b-2 border-stone-400">
+                        <span class="text-xs text-stone-600 font-bold">TROTOAR SEBERANG</span>
+                        <span class="text-2xl">🏫 Sekolah</span>
+                    </div>
+
+                    <!-- Zebra Cross Road Area -->
+                    <div class="relative my-auto h-28 bg-slate-800 flex items-center justify-center border-y-2 border-dashed border-white">
+                        <!-- Zebra stripes -->
+                        <div class="absolute inset-0 flex justify-around opacity-40">
+                            <div class="w-8 h-full bg-white"></div>
+                            <div class="w-8 h-full bg-white"></div>
+                            <div class="w-8 h-full bg-white"></div>
+                            <div class="w-8 h-full bg-white"></div>
+                            <div class="w-8 h-full bg-white"></div>
+                        </div>
+
+                        <!-- Animated Vehicles -->
+                        <div id="car-left" class="absolute left-4 transition-all duration-500 text-4xl">🚘</div>
+                        <div id="car-right" class="absolute right-4 transition-all duration-500 text-4xl">🚙</div>
+
+                        <!-- Character Sprite -->
+                        <div id="game-character" class="absolute bottom-2 transition-all duration-700 text-4xl font-bold">
+                            <span id="game-char-icon">👦</span>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Sidewalk -->
+                    <div class="bg-stone-300 h-10 rounded-lg flex items-center justify-end px-4 border-t-2 border-stone-400">
+                        <span class="text-xs text-stone-600 font-bold">TROTOAR AWAL</span>
+                    </div>
+                </div>
+
+                <!-- Action Controls for Game -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-2">
+                    <button id="btn-step-1" onclick="gameDoStep(1)" class="btn-game bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-2 rounded-xl text-xs md:text-sm">
+                        1. Tengok Kanan 👀
+                    </button>
+                    <button id="btn-step-2" onclick="gameDoStep(2)" disabled class="btn-game bg-gray-500 text-white font-bold py-3 px-2 rounded-xl text-xs md:text-sm opacity-50 cursor-not-allowed">
+                        2. Tengok Kiri 👀
+                    </button>
+                    <button id="btn-step-3" onclick="gameDoStep(3)" disabled class="btn-game bg-gray-500 text-white font-bold py-3 px-2 rounded-xl text-xs md:text-sm opacity-50 cursor-not-allowed">
+                        3. Tengok Kanan Lagi 👀
+                    </button>
+                    <button id="btn-step-4" onclick="gameDoStep(4)" disabled class="btn-game bg-gray-500 text-white font-bold py-3 px-2 rounded-xl text-xs md:text-sm opacity-50 cursor-not-allowed">
+                        4. Menyeberang! 🚶
+                    </button>
+                </div>
+            </div>
+
+            <!-- Game Reset & Next button -->
+            <div class="flex justify-between items-center">
+                <button onclick="resetGameSim()" class="text-gray-500 text-sm font-bold hover:underline">
+                    🔄 Ulangi Game
+                </button>
+                <button onclick="goToQuiz()" class="btn-game bg-brandRed hover:bg-rose-600 text-white font-extrabold px-6 py-3 rounded-2xl text-sm flex items-center gap-2">
+                    <span>Lanjut ke Kuis Soal</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 5: LATIHAN SOAL KUIS -->
+        <section id="screen-quiz" class="hidden w-full bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-brandRed space-y-6">
+            <!-- Quiz Header -->
+            <div class="flex justify-between items-center border-b pb-4">
+                <div>
+                    <span class="text-xs font-extrabold text-brandRed uppercase tracking-wider">Kuis Keselamatan</span>
+                    <h2 class="text-2xl font-extrabold text-brandDark">Latihan Soal Interaktif</h2>
+                </div>
+                <!-- Score Indicator -->
+                <div class="bg-amber-100 text-amber-800 border border-amber-300 font-extrabold px-4 py-2 rounded-2xl flex items-center gap-2">
+                    <i class="fa-solid fa-star text-amber-500"></i>
+                    <span>Skor: <span id="quiz-live-score">0</span></span>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 rounded-full h-3">
+                <div id="quiz-progress" class="bg-brandRed h-3 rounded-full transition-all duration-300" style="width: 20%"></div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-rose-50 p-6 rounded-2xl border-2 border-rose-200 space-y-4">
+                <div class="flex justify-between items-start gap-3">
+                    <span id="quiz-q-num" class="bg-brandRed text-white font-extrabold text-xs px-3 py-1 rounded-full">Soal 1 dari 5</span>
+                    <button onclick="speakQuizQuestion()" class="bg-white hover:bg-rose-100 text-brandRed p-2 rounded-xl border border-rose-300 text-xs font-bold flex items-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-volume-high"></i>
+                        <span>Dengarkan Soal</span>
+                    </button>
+                </div>
+
+                <h3 id="quiz-q-text" class="text-lg md:text-xl font-extrabold text-brandDark">
+                    Apa yang harus kita lakukan saat lampu lalu lintas berwarna MERAH?
+                </h3>
+
+                <!-- Question Image/Icon Display -->
+                <div id="quiz-q-icon" class="text-5xl text-center py-2">🔴</div>
+
+                <!-- Answer Choices Grid -->
+                <div id="quiz-options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                    <!-- Dynamic option buttons injected via JS -->
+                </div>
+            </div>
+
+            <!-- Quiz Footer / Feedback -->
+            <div id="quiz-feedback" class="hidden p-4 rounded-2xl text-center font-bold text-sm">
+                <!-- Dynamic feedback message -->
+            </div>
+
+            <div class="flex justify-between items-center">
+                <button onclick="goToScreen('screen-menu')" class="text-gray-500 font-bold text-sm hover:underline">
+                    ← Keluar Kuis
+                </button>
+                <button id="btn-next-q" onclick="nextQuestion()" disabled class="btn-game bg-gray-400 text-white font-extrabold px-6 py-3 rounded-2xl text-sm flex items-center gap-2 opacity-50 cursor-not-allowed">
+                    <span>Soal Berikutnya</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 6: HASIL & SKOR -->
+        <section id="screen-score" class="hidden w-full bg-white rounded-3xl p-6 md:p-10 shadow-xl border-4 border-brandYellow text-center space-y-6">
+            <div class="space-y-2">
+                <span class="bg-amber-100 text-amber-800 text-xs font-bold px-4 py-1.5 rounded-full uppercase">Hasil Belajar</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-brandDark">Hore! Kuis Selesai 🎉</h2>
+                <p id="score-praise" class="text-gray-600 font-semibold">Kamu telah menyelesaikan latihan soal dengan sangat baik!</p>
+            </div>
+
+            <!-- Star Rating Display -->
+            <div class="flex justify-center items-center gap-3 text-5xl md:text-6xl my-4">
+                <span id="star-1" class="text-gray-300 transition duration-500">⭐</span>
+                <span id="star-2" class="text-gray-300 transition duration-500">⭐</span>
+                <span id="star-3" class="text-gray-300 transition duration-500">⭐</span>
+            </div>
+
+            <!-- Big Score Box -->
+            <div class="bg-amber-50 p-6 rounded-3xl border-4 border-brandYellow max-w-sm mx-auto shadow-inner space-y-2">
+                <p class="text-sm text-amber-800 font-bold uppercase">Nilai Akhir Kamu:</p>
+                <div id="final-score-val" class="text-6xl font-extrabold text-brandDark">100</div>
+                <p id="final-correct-count" class="text-xs text-gray-500 font-semibold">Benar 5 dari 5 Soal</p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center gap-3 max-w-md mx-auto">
+                <button onclick="goToQuiz()" class="btn-game bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3.5 px-6 rounded-2xl flex-1 text-sm">
+                    🔄 Coba Kuis Lagi
+                </button>
+                <button onclick="goToCertificate()" class="btn-game bg-brandGreen hover:bg-emerald-500 text-white font-extrabold py-3.5 px-6 rounded-2xl flex-1 text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-award text-lg"></i>
+                    <span>Lihat Sertifikat</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 7: SERTIFIKAT KELULUSAN -->
+        <section id="screen-certificate" class="hidden w-full space-y-6">
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow">
+                <button onclick="goToScreen('screen-menu')" class="text-brandBlue font-bold text-sm hover:underline">
+                    ← Kembali ke Menu
+                </button>
+                <button onclick="printCertificate()" class="btn-game bg-brandBlue hover:bg-sky-600 text-white font-extrabold px-5 py-2.5 rounded-xl text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Cetak / Simpan Sertifikat</span>
+                </button>
+            </div>
+
+            <!-- Printable Certificate Container -->
+            <div id="certificate-card" class="bg-amber-50 p-6 md:p-10 rounded-3xl border-8 border-amber-400 text-center relative shadow-2xl overflow-hidden font-fredoka">
+                <!-- Decorative Corner Badges -->
+                <div class="absolute -top-10 -left-10 w-28 h-28 bg-brandYellow rounded-full opacity-30"></div>
+                <div class="absolute -bottom-10 -right-10 w-28 h-28 bg-brandGreen rounded-full opacity-30"></div>
+
+                <div class="border-4 border-dashed border-amber-300 p-6 rounded-2xl bg-white/80 space-y-6">
+                    <!-- Certificate Header -->
+                    <div class="flex justify-center items-center gap-3">
+                        <span class="text-4xl">🚦</span>
+                        <div>
+                            <h2 class="text-xs uppercase font-extrabold text-amber-700 tracking-widest">Sertifikat Kelulusan Modul</h2>
+                            <h3 class="text-2xl md:text-3xl font-extrabold text-brandDark">DETEKTIF KESELAMATAN JALAN</h3>
+                        </div>
+                        <span class="text-4xl">🚸</span>
+                    </div>
+
+                    <p class="text-sm text-gray-600">Diberikan dengan bangga kepada:</p>
+
+                    <!-- Student Name -->
+                    <div class="py-2 border-b-4 border-brandYellow inline-block px-8">
+                        <h1 id="cert-student-name" class="text-3xl md:text-4xl font-extrabold text-brandBlue">
+                            Budi Santoso
+                        </h1>
+                    </div>
+
+                    <p class="text-xs md:text-sm text-gray-700 max-w-lg mx-auto leading-relaxed">
+                        Telah berhasil mempelajari materi <span class="font-bold text-brandDark">"Berhati-hati di Jalan"</span>, mempraktikkan aturan menyeberang 4T, dan menyelesaikan Kuis Keselamatan dengan Nilai Terbaik:
+                    </p>
+
+                    <!-- Score Badge -->
+                    <div class="inline-flex items-center gap-3 bg-emerald-100 text-emerald-900 px-6 py-2 rounded-2xl border-2 border-emerald-300 font-extrabold text-lg">
+                        <span>⭐ SKOR AKHIR:</span>
+                        <span id="cert-score-disp" class="text-2xl text-brandGreen">100</span>
+                    </div>
+
+                    <!-- Signatures & Date Footer -->
+                    <div class="grid grid-cols-2 gap-4 pt-6 text-xs text-gray-600 border-t border-gray-200">
+                        <div>
+                            <p class="font-bold text-gray-400">Tanggal Kelulusan:</p>
+                            <p id="cert-date" class="font-extrabold text-brandDark mt-1">25 September 2026</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-400">Pembimbing & Polisi Cilik:</p>
+                            <p class="font-extrabold text-brandDark mt-1">Kapten Rambu 👮‍♂️</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t py-4 text-center text-xs text-gray-500">
+        <p>© 2026 Modul Edukasi Keselamatan Jalan SD Kelas 2. Didesain untuk Pembelajaran Interaktif & Fun!</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // GLOBAL APP STATE
+        const appState = {
+            studentName: 'Siswa Hebat',
+            studentAvatar: '👦',
+            audioEnabled: true,
+            currentQuizIndex: 0,
+            score: 0,
+            answers: [],
+            materiTab: 1
+        };
+
+        // AUDIO SYNTH & SPEECH ENGINE
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Sound effect generator using Web Audio API
+        function playSound(type) {
+            if (!appState.audioEnabled) return;
+            try {
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.1);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } else if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(250, now);
+                    osc.frequency.linearRampToValueAtTime(150, now + 0.25);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'fanfare') {
+                    // Short cheerful fanfare
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                        const o = audioCtx.createOscillator();
+                        const g = audioCtx.createGain();
+                        o.connect(g);
+                        g.connect(audioCtx.destination);
+                        o.frequency.value = freq;
+                        g.gain.setValueAtTime(0.15, now + (i * 0.12));
+                        g.gain.exponentialRampToValueAtTime(0.01, now + (i * 0.12) + 0.25);
+                        o.start(now + (i * 0.12));
+                        o.stop(now + (i * 0.12) + 0.25);
+                    });
+                }
+            } catch (e) {
+                console.log("Audio FX error", e);
+            }
+        }
+
+        // Speech Synthesis Helper
+        function speakText(text) {
+            if (!appState.audioEnabled) return;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop active speech
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'id-ID';
+                utterance.rate = 0.9; // Slightly slower for primary school kids
+                utterance.pitch = 1.1; // Cheerful tone
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function toggleAudioSetting() {
+            appState.audioEnabled = !appState.audioEnabled;
+            const btnText = document.getElementById('audio-status-text');
+            const btnIcon = document.getElementById('audio-icon');
+            if (appState.audioEnabled) {
+                btnText.textContent = "Suara ON";
+                btnIcon.className = "fa-solid fa-volume-high";
+                speakText("Suara telah diaktifkan");
+            } else {
+                btnText.textContent = "Suara OFF";
+                btnIcon.className = "fa-solid fa-volume-xmark";
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+        }
+
+        // SCREEN NAVIGATION
+        function goToScreen(screenId) {
+            playSound('click');
+            const screens = ['screen-welcome', 'screen-menu', 'screen-materi', 'screen-game', 'screen-quiz', 'screen-score', 'screen-certificate'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            const target = document.getElementById(screenId);
+            if (target) {
+                target.classList.remove('hidden');
+            }
+
+            // Screen specific voice triggers
+            if (screenId === 'screen-menu') {
+                speakText(`Halo ${appState.studentName}! Pilih menu untuk belajar, bermain game, atau mengerjakan kuis.`);
+            } else if (screenId === 'screen-materi') {
+                speakCurrentMateriTab();
+            } else if (screenId === 'screen-game') {
+                resetGameSim();
+                speakText("Selamat datang di game menyeberang jalan! Lakukan 4 langkah menyeberang dengan urutan yang benar.");
+            } else if (screenId === 'screen-quiz') {
+                appState.currentQuizIndex = 0;
+                appState.score = 0;
+                renderQuizQuestion();
+            }
+        }
+
+        function selectAvatar(avatarEmoji) {
+            playSound('click');
+            appState.studentAvatar = avatarEmoji;
+            document.querySelectorAll('.avatar-btn').forEach(btn => {
+                if (btn.textContent.includes(avatarEmoji)) {
+                    btn.classList.add('border-brandBlue');
+                    btn.classList.remove('border-transparent');
+                } else {
+                    btn.classList.remove('border-brandBlue');
+                    btn.classList.add('border-transparent');
+                }
+            });
+        }
+
+        function startApp() {
+            const inputName = document.getElementById('student-name').value.trim();
+            if (inputName !== "") {
+                appState.studentName = inputName;
+            } else {
+                appState.studentName = "Siswa Hebat";
+            }
+
+            // Update user displays
+            document.getElementById('user-avatar-disp').textContent = appState.studentAvatar;
+            document.getElementById('user-name-disp').textContent = appState.studentName;
+            document.getElementById('header-user').classList.remove('hidden');
+
+            document.getElementById('menu-avatar-display').textContent = appState.studentAvatar;
+            document.getElementById('menu-greeting').textContent = `Halo, ${appState.studentName}!`;
+
+            goToScreen('screen-menu');
+        }
+
+        // MATERI SECTION LOGIC
+        function switchMateriTab(tabNum) {
+            playSound('click');
+            appState.materiTab = tabNum;
+            for (let i = 1; i <= 4; i++) {
+                const tabBtn = document.getElementById(`tab-mat-${i}`);
+                const panel = document.getElementById(`materi-content-${i}`);
+                if (i === tabNum) {
+                    tabBtn.className = "px-4 py-2 font-bold rounded-2xl whitespace-nowrap bg-brandGreen text-white";
+                    panel.classList.remove('hidden');
+                } else {
+                    tabBtn.className = "px-4 py-2 font-bold rounded-2xl whitespace-nowrap bg-gray-100 text-gray-600 hover:bg-gray-200";
+                    panel.classList.add('hidden');
+                }
+            }
+            speakCurrentMateriTab();
+        }
+
+        function speakCurrentMateriTab() {
+            if (appState.materiTab === 1) {
+                speakText("Lampu Lalu Lintas. Lampu Merah artinya Berhenti. Lampu Kuning artinya Hati-hati. Lampu Hijau artinya Jalan.");
+            } else if (appState.materiTab === 2) {
+                speakText("Cara Menyeberang Jalan 4 T. Pertama Tengok Kanan. Kedua Tengok Kiri. Ketiga Tengok Kanan Lagi. Keempat Jalan menyeberang jika aman.");
+            } else if (appState.materiTab === 3) {
+                speakText("Tempat Aman Menyeberang. Zebra Cross adalah garis putih di jalan. JPO adalah Jembatan Penyeberangan Orang. Selalu berjalan di Trotoar!");
+            } else if (appState.materiTab === 4) {
+                speakText("Aturan Berkendara. Naik sepeda wajib pakai helm sepeda. Naik mobil wajib pakai sabuk pengaman. Naik motor wajib pakai helm SNI.");
+            }
+        }
+
+        function playLampuInfo(warna) {
+            playSound('click');
+            if (warna === 'merah') {
+                speakText("Lampu Merah! Kendaraan harus BERHENTI!");
+            } else if (warna === 'kuning') {
+                speakText("Lampu Kuning! Pengendara harus HATI-HATI dan bersiap berhenti!");
+            } else if (warna === 'hijau') {
+                speakText("Lampu Hijau! Kendaraan Boleh JALAN!");
+            }
+        }
+
+        function goToMateri() {
+            goToScreen('screen-materi');
+        }
+
+        // MINI GAME LOGIC
+        let gameStepProgress = 0;
+
+        function resetGameSim() {
+            gameStepProgress = 0;
+            const carLeft = document.getElementById('car-left');
+            const carRight = document.getElementById('car-right');
+            const char = document.getElementById('game-character');
+            const msg = document.getElementById('game-message');
+
+            carLeft.style.transform = 'translateX(0px)';
+            carRight.style.transform = 'translateX(0px)';
+            char.style.bottom = '8px';
+            document.getElementById('game-char-icon').textContent = appState.studentAvatar;
+
+            msg.className = "bg-brandBlue text-white p-3 rounded-xl font-bold text-sm md:text-base";
+            msg.textContent = 'Langkah 1: Klik tombol "1. Tengok Kanan" untuk memeriksa mobil!';
+
+            // Reset buttons
+            setGameBtnState(1, true);
+            setGameBtnState(2, false);
+            setGameBtnState(3, false);
+            setGameBtnState(4, false);
+        }
+
+        function setGameBtnState(num, enabled) {
+            const btn = document.getElementById(`btn-step-${num}`);
+            if (enabled) {
+                btn.disabled = false;
+                btn.className = "btn-game bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-2 rounded-xl text-xs md:text-sm pulse-subtle";
+            } else {
+                btn.disabled = true;
+                btn.className = "btn-game bg-gray-500 text-white font-bold py-3 px-2 rounded-xl text-xs md:text-sm opacity-50 cursor-not-allowed";
+            }
+        }
+
+        function gameDoStep(step) {
+            playSound('click');
+            const msg = document.getElementById('game-message');
+            const carLeft = document.getElementById('car-left');
+            const carRight = document.getElementById('car-right');
+            const char = document.getElementById('game-character');
+
+            if (step === 1) {
+                carRight.style.transform = 'translateX(-120px)';
+                msg.textContent = 'Bagus! Kanan aman. Sekarang Langkah 2: Klik "2. Tengok Kiri"!';
+                speakText("Tengok Kanan. Jalanan sebelah kanan sepi!");
+                setGameBtnState(1, false);
+                setGameBtnState(2, true);
+            } else if (step === 2) {
+                carLeft.style.transform = 'translateX(120px)';
+                msg.textContent = 'Sip! Kiri juga aman. Langkah 3: Klik "3. Tengok Kanan Lagi"!';
+                speakText("Tengok Kiri. Tidak ada mobil dari kiri!");
+                setGameBtnState(2, false);
+                setGameBtnState(3, true);
+            } else if (step === 3) {
+                msg.textContent = 'Hebat! Jalanan benar-benar sepi. Langkah 4: Klik "4. Menyeberang!"!';
+                speakText("Tengok Kanan Lagi. Jalanan aman! Sekarang saatnya menyeberang.");
+                setGameBtnState(3, false);
+                setGameBtnState(4, true);
+            } else if (step === 4) {
+                char.style.bottom = '190px'; // Move across zebra cross
+                playSound('fanfare');
+                if (typeof confetti === 'function') confetti();
+                msg.className = "bg-brandGreen text-white p-3 rounded-xl font-extrabold text-sm md:text-base";
+                msg.textContent = '🎉 SELAMAT! Kamu berhasil menyeberang dengan aman mengikuti aturan 4T!';
+                speakText("Hore! Kamu berhasil menyeberang jalan dengan selamat. Kamu anak yang pintar!");
+                setGameBtnState(4, false);
+            }
+        }
+
+        function goToGame() {
+            goToScreen('screen-game');
+        }
+
+        // QUIZ DATASET (Kelas 2 SD Friendly)
+        const quizQuestions = [
+            {
+                question: "Apa yang harus kita lakukan jika lampu lalu lintas berwarna MERAH?",
+                icon: "🔴",
+                options: [
+                    { text: "Berhenti dan menunggu", correct: true },
+                    { text: "Lari secepatnya", correct: false },
+                    { text: "Mengendarai sepeda kencang", correct: false },
+                    { text: "Bercanda di tengah jalan", correct: false }
+                ],
+                explanation: "Lampu MERAH artinya BERHENTI."
+            },
+            {
+                question: "Di manakah tempat yang aman bagi pejalan kaki untuk menyeberang jalan?",
+                icon: "🦓",
+                options: [
+                    { text: "Zebra Cross atau Jembatan JPO", correct: true },
+                    { text: "Di tikungan jalan yang sempit", correct: false },
+                    { text: "Di antara dua mobil yang berjalan", correct: false },
+                    { text: "Di mana saja tanpa melihat", correct: false }
+                ],
+                explanation: "Garis zebra cross dan JPO adalah tempat paling aman menyeberang."
+            },
+            {
+                question: "Saat naik sepeda di jalan raya, pelindung kepala apa yang wajib dipakai?",
+                icon: "🚴",
+                options: [
+                    { text: "Helm Sepeda", correct: true },
+                    { text: "Topi ulang tahun", correct: false },
+                    { text: "Peci / Kopiah", correct: false },
+                    { text: "Kacamata renang", correct: false }
+                ],
+                explanation: "Helm sepeda melindungi kepala kita agar aman dari benturan."
+            },
+            {
+                question: "Sebelum menyeberang jalan, ingatlah rumus 4T. Langkah pertamanya adalah...",
+                icon: "👀",
+                options: [
+                    { text: "Tengok KANAN", correct: true },
+                    { text: "Langsung Lari", correct: false },
+                    { text: "Tutup Mata", correct: false },
+                    { text: "Tengok Ke Atas", correct: false }
+                ],
+                explanation: "Aturan 4T diawali dengan Tengok KANAN dulu."
+            },
+            {
+                question: "Bagaimanakah sikap yang baik saat berjalan di trotoar?",
+                icon: "🚶",
+                options: [
+                    { text: "Berjalan dengan tenang di jalur trotoar", correct: true },
+                    { text: "Saling dorong dengan teman", correct: false },
+                    { text: "Berlari ke tengah jalan raya", correct: false },
+                    { text: "Bermain bola di jalan raya", correct: false }
+                ],
+                explanation: "Selalu berjalan tenang di atas trotoar dan tidak bercanda."
+            }
+        ];
+
+        function renderQuizQuestion() {
+            const q = quizQuestions[appState.currentQuizIndex];
+            document.getElementById('quiz-q-num').textContent = `Soal ${appState.currentQuizIndex + 1} dari ${quizQuestions.length}`;
+            document.getElementById('quiz-q-text').textContent = q.question;
+            document.getElementById('quiz-q-icon').textContent = q.icon;
+
+            // Update Progress bar
+            const progPercent = ((appState.currentQuizIndex + 1) / quizQuestions.length) * 100;
+            document.getElementById('quiz-progress').style.width = `${progPercent}%`;
+
+            // Clear feedback & disable next
+            const feedbackEl = document.getElementById('quiz-feedback');
+            feedbackEl.classList.add('hidden');
+
+            const nextBtn = document.getElementById('btn-next-q');
+            nextBtn.disabled = true;
+            nextBtn.className = "btn-game bg-gray-400 text-white font-extrabold px-6 py-3 rounded-2xl text-sm flex items-center gap-2 opacity-50 cursor-not-allowed";
+
+            // Options container
+            const container = document.getElementById('quiz-options-container');
+            container.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = "option-btn bg-white hover:bg-sky-50 text-brandDark font-bold p-4 rounded-2xl border-2 border-sky-200 text-left transition text-sm flex items-center justify-between shadow-sm";
+                optBtn.onclick = () => selectQuizAnswer(idx, opt.correct, optBtn);
+                optBtn.innerHTML = `
+                    <span>${String.fromCharCode(65 + idx)}. ${opt.text}</span>
+                    <i class="fa-regular fa-circle text-gray-300"></i>
+                `;
+                container.appendChild(optBtn);
+            });
+
+            speakQuizQuestion();
+        }
+
+        function speakQuizQuestion() {
+            const q = quizQuestions[appState.currentQuizIndex];
+            speakText(`Soal nomor ${appState.currentQuizIndex + 1}. ${q.question}`);
+        }
+
+        function selectQuizAnswer(selectedIndex, isCorrect, btnElement) {
+            playSound(isCorrect ? 'correct' : 'wrong');
+
+            // Disable all option buttons
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+
+            const feedbackEl = document.getElementById('quiz-feedback');
+            feedbackEl.classList.remove('hidden');
+
+            if (isCorrect) {
+                btnElement.className = "option-btn bg-emerald-100 text-emerald-900 font-extrabold p-4 rounded-2xl border-2 border-brandGreen text-left text-sm flex items-center justify-between shadow-md";
+                btnElement.querySelector('i').className = "fa-solid fa-circle-check text-brandGreen text-xl";
+                feedbackEl.className = "p-4 rounded-2xl text-center font-bold text-sm bg-emerald-100 text-emerald-800 border border-emerald-300";
+                feedbackEl.textContent = "✅ Hebat! Jawabanmu BENAR! +20 Skor";
+                appState.score += 20;
+                document.getElementById('quiz-live-score').textContent = appState.score;
+                speakText("Jawabanmu benar! Hebat!");
+            } else {
+                btnElement.className = "option-btn bg-rose-100 text-rose-900 font-extrabold p-4 rounded-2xl border-2 border-brandRed text-left text-sm flex items-center justify-between shadow-md";
+                btnElement.querySelector('i').className = "fa-solid fa-circle-xmark text-brandRed text-xl";
+                
+                // Highlight correct one
+                const currentQ = quizQuestions[appState.currentQuizIndex];
+                const correctIdx = currentQ.options.findIndex(o => o.correct);
+                if (allBtns[correctIdx]) {
+                    allBtns[correctIdx].className = "option-btn bg-emerald-50 text-emerald-900 font-bold p-4 rounded-2xl border-2 border-brandGreen text-left text-sm flex items-center justify-between";
+                }
+
+                feedbackEl.className = "p-4 rounded-2xl text-center font-bold text-sm bg-rose-100 text-rose-800 border border-rose-300";
+                feedbackEl.textContent = `❌ Belum tepat. ${currentQ.explanation}`;
+                speakText(`Kurang tepat. ${currentQ.explanation}`);
+            }
+
+            // Enable next question button
+            const nextBtn = document.getElementById('btn-next-q');
+            nextBtn.disabled = false;
+            nextBtn.className = "btn-game bg-brandRed hover:bg-rose-600 text-white font-extrabold px-6 py-3 rounded-2xl text-sm flex items-center gap-2 cursor-pointer pulse-subtle";
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            appState.currentQuizIndex++;
+            if (appState.currentQuizIndex < quizQuestions.length) {
+                renderQuizQuestion();
+            } else {
+                showFinalScore();
+            }
+        }
+
+        function goToQuiz() {
+            goToScreen('screen-quiz');
+        }
+
+        // SCORE & CERTIFICATE LOGIC
+        function showFinalScore() {
+            goToScreen('screen-score');
+            playSound('fanfare');
+            if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+
+            document.getElementById('final-score-val').textContent = appState.score;
+            const correctCount = appState.score / 20;
+            document.getElementById('final-correct-count').textContent = `Benar ${correctCount} dari ${quizQuestions.length} Soal`;
+
+            // Star calculation
+            const s1 = document.getElementById('star-1');
+            const s2 = document.getElementById('star-2');
+            const s3 = document.getElementById('star-3');
+
+            s1.className = "text-gray-300";
+            s2.className = "text-gray-300";
+            s3.className = "text-gray-300";
+
+            if (appState.score >= 40) s1.className = "text-amber-400 scale-110 transition";
+            if (appState.score >= 80) s2.className = "text-amber-400 scale-110 transition";
+            if (appState.score === 100) s3.className = "text-amber-400 scale-110 transition";
+
+            const praiseEl = document.getElementById('score-praise');
+            if (appState.score === 100) {
+                praiseEl.textContent = "Luar biasa! Kamu mendapatkan Nilai Sempurna 100!";
+                speakText(`Hore! ${appState.studentName}, kamu mendapatkan skor sempurna seratus! Kamu adalah Detektif Keselamatan Jalan Sejati!`);
+            } else if (appState.score >= 60) {
+                praiseEl.textContent = "Bagus sekali! Kamu sudah memahami cara berhati-hati di jalan!";
+                speakText(`Bagus sekali ${appState.studentName}! Skor kamu ${appState.score}. Pertahankan prestasimu!`);
+            } else {
+                praiseEl.textContent = "Tetap semangat! Pelajari materi lagi agar nilaimu semakin bagus!";
+                speakText(`Tetap semangat ${appState.studentName}! Skor kamu ${appState.score}. Pelajari materi sekali lagi ya!`);
+            }
+        }
+
+        function goToCertificate() {
+            goToScreen('screen-certificate');
+            document.getElementById('cert-student-name').textContent = appState.studentName;
+            document.getElementById('cert-score-disp').textContent = appState.score;
+
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('cert-date').textContent = dateStr;
+
+            speakText(`Ini adalah sertifikat kelulusan keselamatan jalan milik ${appState.studentName}!`);
+        }
+
+        function printCertificate() {
+            window.print();
+        }
+
+        // INITIALIZATION
+        window.onload = function() {
+            console.log("Aplikasi Keselamatan Jalan Kelas 2 Berhasil Dimuat.");
+        };
+    </script>
+</body>
+</html>
